@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+  <head>
+      <title>Chrome Inject Javascript Extension</title>
+  </head>
+  <body>
+    <div>
+        <label>
+            <p>Inject Javascript:</p>
+            <textarea id="inject_js" style="width: 90%; height: 200px">
+(function () {
+
+  if(top != window) // skip all iframe/frameset
+    return;
+
+//  if(location.host.match(/grepmusic\.com/i)) { // for a certain host
+//    alert(location.href);
+//    // append javascript file: function append_javascript (src, onload) { /* code implemented by the extension */ }
+//    append_javascript('http://code.jquery.com/jquery-1.11.1.min.js', function () { alert('jquery has been downloaded'); });
+//  }
+
+// force user to go to ONE page every time
+// if(location.href != 'http://www.grepmusic.com/') location.href = 'http://www.grepmusic.com/';
+
+// the following javascript will make chrome scroll to the best answer of stackoverflow.com automatically
+  if(location.href.match(/^http:\/\/stackoverflow.com\/questions\/\d/i)) {
+    var span = document.getElementsByClassName('load-accepted-answer-date')[0];
+    span && span.parentNode.scrollIntoView();
+    console.log('ok');
+  }
+
+// you can do anything you want here using javascript
+
+})();
+            </textarea>
+        </label>
+        <div>
+            <input id="save" value="Save" type="button" />
+            <span id="save_status" style="display: none; color: #080;">ok</span>
+        </div>
+    </div>
+    <script type="text/javascript" src="inject_js.js"></script>
+  </body>
+</html>
