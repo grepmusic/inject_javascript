@@ -1,31 +1,20 @@
 (function () {
-    window.append_javascript = function (src, onload) {
-        var js = document.createElement('script');
-        js.setAttribute("type", "text/javascript");
-        js.type = "text/javascript";
-        js.setAttribute("src", src);
-        js.src = src;
-        js.onload = function (evt) {
-            console.log('extension::append_javascript: loaded js file: ' + src);
-            if(onload) onload(evt);
-        }
-        var body = document.getElementsByTagName('body')[0];
-        if(body) {
-            body.appendChild(js);
-        } else { // should never happen
-            console.log("extension::append_javascript: body element does not exist");
-        }
-    }
-
-    chrome.extension.sendMessage({ connected: true }, function(response) {
+    (async () => {
+        const response = await chrome.runtime.sendMessage({ connected: true });
+        // do something with response here, not outside the function
+        console.log('response', response);
         console.log('responded from background javascript');
-        if(response.inject_js) {
+        if(response && response.inject_js) {
             try {
                 //console.log('js: ' + response.inject_js);
-                eval(response.inject_js);
+                var iframe = document.createElement('iframe');
+                iframe.setAttribute("onload", response.inject_js) // currently the only way(I have found) to bypass `unsafe-inline` error
+                iframe.src = 'about:blank'
+                document.body.appendChild(iframe)
+                // eval(response.inject_js); // not work any more for manifest v3
             } catch (e) {
-                console.log(e);
+                console.log('eval error', e);
             }
         }
-    });
+    })();
 })();
